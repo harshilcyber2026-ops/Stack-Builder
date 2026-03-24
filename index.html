@@ -158,13 +158,6 @@ code,.mono{font-family:var(--font-mono);background:rgba(0,232,200,0.06);border:1
 
 <nav class="nav">
   <a class="nav-brand" href="#"><span class="bracket">[</span><span class="brand-flag">⚑</span>FLAG<span style="color:var(--accent)">VAULT</span><span class="bracket">]</span></a>
-  <ul class="nav-links">
-    <li><a href="#">Home</a></li>
-    <li><a href="#" class="active">Challenges</a></li>
-    <li><a href="#">Scoreboard</a></li>
-    <li><a href="#">Tools</a></li>
-    <li><a href="#">Rules</a></li>
-  </ul>
   <div class="nav-status"><span class="status-dot"></span><span>CTF LIVE</span></div>
 </nav>
 
@@ -303,84 +296,14 @@ code,.mono{font-family:var(--font-mono);background:rgba(0,232,200,0.06);border:1
         <span class="dl-arrow">→</span>
       </a>
 
-      <div class="sec-divider"><h3>Hints</h3></div>
-      <div class="hints-container">
-        <div class="hint-item" id="h1">
-          <button class="hint-toggle" onclick="revealHint('h1')">
-            <span class="hint-num">HINT 01</span>
-            Fastest single GDB command to get the flag
-            <span class="hint-cost">-50 pts</span>
-          </button>
-          <div class="hint-content">
-            <code style="background:transparent;border:none;color:var(--accent)">gdb -q ./stack_builder -ex "b printf" -ex "run" -ex "x/s \$rsi" -ex "quit"</code><br><br>
-            This loads GDB silently, breaks at printf, runs the program, prints the second argument (the flag string), then exits. One command, flag captured.
-          </div>
-        </div>
-        <div class="hint-item" id="h2">
-          <button class="hint-toggle" onclick="revealHint('h2')">
-            <span class="hint-num">HINT 02</span>
-            ltrace one-liner — no GDB needed
-            <span class="hint-cost">-75 pts</span>
-          </button>
-          <div class="hint-content">
-            <code style="background:transparent;border:none;color:var(--accent)">ltrace ./stack_builder 2>&amp;1 | grep printf</code><br><br>
-            ltrace intercepts all library calls including printf. The output shows:<br>
-            <code style="background:transparent;border:none;color:var(--accent3)">printf("[+] Flag: %s\n", "FlagVault{...}")</code><br><br>
-            The flag appears as the second string argument right in the ltrace output.
-          </div>
-        </div>
-        <div class="hint-item" id="h3">
-          <button class="hint-toggle" onclick="revealHint('h3')">
-            <span class="hint-num">HINT 03</span>
-            Ghidra decompiler output — what to look for
-            <span class="hint-cost">-100 pts</span>
-          </button>
-          <div class="hint-content">
-            In Ghidra's decompiler, <code style="background:transparent;border:none">build_and_print</code> shows lines like:<br><br>
-            <code style="background:transparent;border:none;color:var(--accent)">local_70 = 0x46;  /* F */</code><br>
-            <code style="background:transparent;border:none;color:var(--accent)">local_6f = 0x6c;  /* l */</code><br>
-            <code style="background:transparent;border:none;color:var(--accent)">local_6e = 0x61;  /* a */</code><br>
-            ...<br><br>
-            The variable names (local_70, local_6f...) reflect descending stack offsets. Read them top-to-bottom and convert the hex values to ASCII.
-          </div>
-        </div>
-        <div class="hint-item" id="h4">
-          <button class="hint-toggle" onclick="revealHint('h4')">
-            <span class="hint-num">HINT 04</span>
-            The easiest method of all
-            <span class="hint-cost">-25 pts</span>
-          </button>
-          <div class="hint-content">
-            Just run the binary! The challenge says it constructs the flag at runtime — that means it <em>also prints it</em> at runtime.<br><br>
-            <code style="background:transparent;border:none;color:var(--accent)">chmod +x ./stack_builder &amp;&amp; ./stack_builder</code><br><br>
-            The flag is printed to stdout at the end of execution. The challenge is understanding <em>how</em> it's built, not that the binary hides the output.
-          </div>
-        </div>
-      </div>
-
-      <div class="flag-format">
-        <span class="flag-icon">⚑</span>
-        <span>Flag format: <strong>FlagVault{your_flag_here}</strong></span>
-      </div>
-
-      <div class="submit-section">
-        <div class="submit-title">Submit Your Flag</div>
-        <p class="submit-sub">Run the binary, use GDB/ltrace, or reconstruct from Ghidra. Copy the complete flag.</p>
-        <div class="flag-input-wrap">
-          <span class="prefix">FlagVault{</span>
-          <input class="form-control" id="flagInput" type="text" placeholder="your_flag_here}" autocomplete="off" spellcheck="false"/>
-        </div>
-        <div class="flag-submit-row">
-          <button class="btn btn-primary" onclick="submitFlag()">⚑ &nbsp;Submit Flag</button>
-          <button class="btn btn-danger"  onclick="clearFlag()">✕ &nbsp;Clear</button>
-        </div>
+     
         <div class="solved-banner" id="solvedBanner">
           <span class="sb-icon">🏆</span>
           <div>
             <div style="font-weight:bold;margin-bottom:.2rem;color:var(--accent)">CORRECT — Stack Decoded!</div>
             <div style="font-size:.72rem;color:var(--text-dim)">You caught the flag as it was assembled on the stack. Nice work.</div>
           </div>
-          <span class="sb-pts">+350 pts</span>
+      
         </div>
         <div class="submit-result" id="wrongBanner">
           ✕ &nbsp;Incorrect flag. Run the binary or read the stack bytes from GDB. Copy the full FlagVault{...} output.
@@ -394,14 +317,11 @@ code,.mono{font-family:var(--font-mono);background:rgba(0,232,200,0.06);border:1
         <div class="side-card-title">// Challenge Info</div>
         <div class="meta-row"><span class="meta-key">Category</span><span class="meta-val"><span class="tag tag-purple">Reverse Eng.</span></span></div>
         <div class="meta-row"><span class="meta-key">Difficulty</span><span class="meta-val"><span class="tag tag-amber">Medium</span></span></div>
-        <div class="meta-row"><span class="meta-key">Points</span><span class="meta-val" style="color:var(--accent3)">350 pts</span></div>
         <div class="meta-row"><span class="meta-key">Platform</span><span class="meta-val">Linux x86-64</span></div>
         <div class="meta-row"><span class="meta-key">Binary</span><span class="meta-val"><code style="font-size:.7rem">ELF 64-bit</code></span></div>
         <div class="meta-row"><span class="meta-key">Technique</span><span class="meta-val red">Stack construction</span></div>
         <div class="meta-row"><span class="meta-key">Author</span><span class="meta-val green">FlagVault Team</span></div>
-        <div class="meta-row"><span class="meta-key">Solves</span><span class="meta-val green" id="solveCount">41</span></div>
         <div class="solve-bar-wrap">
-          <div class="solve-bar-label"><span>Solve Rate</span><span id="solveRate">41 / 120</span></div>
           <div class="solve-bar"><div class="solve-bar-fill" id="solveFill"></div></div>
         </div>
       </div>
